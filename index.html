@@ -4,39 +4,38 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Where Am I?</title>
-<meta name="description" content="Guess the city a photograph was taken in. Every photo is a real place, and the score is the distance between the city you name and the spot the shutter actually fired.">
+<meta name="description" content="Where Am I? — a new game, in development.">
 
 <meta property="og:title" content="Where Am I?">
-<meta property="og:description" content="Guess the city a photograph was taken in. A game of real places, coming to iOS, Android and the web.">
+<meta property="og:description" content="A new game, in development.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://where-am-i-game.com">
 <meta name="twitter:card" content="summary">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Spline+Sans+Mono:wght@500&display=swap" rel="stylesheet">
 
 <style>
   /* ------------------------------------------------------------------
      "Departure board" -- the same visual language as the app itself
      (src/design/tokens.ts). Cool wayfinding: near-neutral paper,
-     near-black ink, hairline rules, mono readouts, and a single
-     high-visibility signal accent. No cards, no rounded corners, no
-     gradients. Paper is the board in daylight; Darkroom is the same
-     board lit from behind.
+     near-black ink, a single high-visibility signal accent. No cards,
+     no rounded corners, no gradients. Paper is the board in daylight;
+     Darkroom is the same board lit from behind.
+
+     This is deliberately a NAME PLATE and nothing more. It says the
+     game exists and gives no account of what it does -- see the repo
+     README before adding anything to it.
      ------------------------------------------------------------------ */
 
   :root {
-    --bg:          #F4F5F3;
-    --bg-sunk:     #E7E9E6;
-    --bg-raised:   #FCFDFB;
-    --ink:         #16181A;
-    --ink-muted:   #3F4448;
-    --ink-faint:   #63686D;
-    --rule:        rgba(22, 24, 26, 0.14);
-    --rule-strong: rgba(22, 24, 26, 0.32);
-    --accent:      #F5B301;
-    --accent-ink:  #16181A;
+    --bg:         #F4F5F3;
+    --ink:        #16181A;
+    --ink-muted:  #3F4448;
+    --ink-faint:  #63686D;
+    --rule:       rgba(22, 24, 26, 0.14);
+    --accent:     #F5B301;
 
     --display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
     --mono: 'Spline Sans Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
@@ -44,16 +43,12 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg:          #101214;
-      --bg-sunk:     #0A0B0C;
-      --bg-raised:   #1C1F22;
-      --ink:         #ECEEF0;
-      --ink-muted:   #B6BBC0;
-      --ink-faint:   #84898E;
-      --rule:        rgba(236, 238, 240, 0.16);
-      --rule-strong: rgba(236, 238, 240, 0.38);
-      --accent:      #FFD400;
-      --accent-ink:  #101214;
+      --bg:         #101214;
+      --ink:        #ECEEF0;
+      --ink-muted:  #B6BBC0;
+      --ink-faint:  #84898E;
+      --rule:       rgba(236, 238, 240, 0.16);
+      --accent:     #FFD400;
     }
   }
 
@@ -67,27 +62,26 @@
   }
 
   body {
-    font-family: var(--mono);
-    font-size: 16px;
-    line-height: 1.6;
+    font-family: var(--display);
     -webkit-font-smoothing: antialiased;
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
     min-height: 100svh;
+    display: flex;
+    flex-direction: column;
   }
 
   .sheet {
     width: 100%;
     max-width: 720px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
   }
 
-  /* Uppercase micro-labels that annotate the page like a survey form. */
+  /* An uppercase micro-label, the way the app annotates a screen. */
   .label {
     font-family: var(--mono);
     font-weight: 500;
@@ -98,230 +92,70 @@
     margin: 0;
   }
 
-  /* ---- masthead ---- */
-
-  .masthead {
-    padding: 48px 0 32px;
-    border-bottom: 1px solid var(--rule-strong);
-  }
-
   .wordmark {
     font-family: var(--display);
     font-weight: 700;
-    font-size: clamp(38px, 11vw, 64px);
-    line-height: 1.08;
+    font-size: clamp(40px, 12vw, 76px);
+    line-height: 1.06;
     letter-spacing: 0.5px;
-    margin: 0 0 12px;
+    margin: 14px 0 0;
     color: var(--ink);
   }
 
-  /* Prose is set in the display face, not the mono one. The app divides the
-     two by job -- Spline Sans Mono is every label, coordinate and readout;
-     Space Grotesk is the voice -- and a page with actual sentences on it has
-     to honour that division or it becomes a wall of monospace. */
-  .standfirst {
-    font-family: var(--display);
-    font-weight: 500;
-    font-size: 17px;
-    line-height: 1.55;
-    color: var(--ink-muted);
-    margin: 20px 0 0;
-    max-width: 46ch;
-  }
-
-  /* ---- the board: hairline-ruled rows of label + readout ---- */
-
-  .board { margin: 0; padding: 0; }
-
-  .row {
-    display: flex;
-    align-items: baseline;
-    gap: 20px;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .row dt {
-    flex: 0 0 108px;
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: 10px;
-    letter-spacing: 1.6px;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-
-  .row dd {
-    margin: 0;
-    flex: 1;
-    font-family: var(--mono);
-    font-weight: 500;
-    font-size: 15px;
-    color: var(--ink);
-  }
-
-  .row dd .sub {
-    display: block;
-    font-weight: 400;
-    font-size: 13px;
-    color: var(--ink-muted);
-    margin-top: 3px;
-  }
-
-  /* ---- the stamped band: the one place the accent is used ---- */
-
-  .band {
+  /* The signal stripe. The single piece of colour on the page, and the
+     only thing standing in for all the content that is deliberately
+     not here. */
+  .stripe {
+    width: 96px;
+    height: 8px;
     background: var(--accent);
-    color: var(--accent-ink);
-    padding: 22px 24px;
-    margin: 40px 0 0;
+    margin: 28px 0 0;
   }
 
-  .band .label { color: var(--accent-ink); opacity: 0.72; }
-
-  .band p.headline {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(19px, 5vw, 24px);
-    line-height: 1.24;
-    margin: 8px 0 0;
-    color: var(--accent-ink);
-  }
-
-  /* ---- prose ---- */
-
-  .section { padding: 40px 0 0; }
-
-  .section h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: 22px;
-    line-height: 1.24;
-    margin: 0 0 14px;
-    color: var(--ink);
-  }
-
-  .section p {
+  .line {
     font-family: var(--display);
     font-weight: 500;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: clamp(16px, 4.4vw, 19px);
+    line-height: 1.5;
     color: var(--ink-muted);
-    margin: 0 0 14px;
-    max-width: 54ch;
+    margin: 28px 0 0;
+    max-width: 34ch;
   }
 
-  .section p strong { color: var(--ink); font-weight: 700; }
-
-  /* ---- colophon ---- */
-
-  footer { margin-top: auto; padding: 48px 0 32px; }
+  footer {
+    padding: 0 24px 32px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+  }
 
   .footer-inner {
     border-top: 1px solid var(--rule);
-    padding-top: 20px;
+    padding-top: 18px;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 24px;
+    gap: 6px 24px;
     justify-content: space-between;
   }
 
   footer p { margin: 0; }
-
-  a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-  a:hover { color: var(--accent); }
-
-  @media (max-width: 460px) {
-    .row { flex-direction: column; gap: 4px; }
-    .row dt { flex: none; }
-    .masthead { padding-top: 36px; }
-  }
 </style>
 </head>
 <body>
 
-<div class="sheet">
-
-  <header class="masthead">
-    <p class="label">A game of real places</p>
+  <main class="sheet">
+    <p class="label">In development</p>
     <h1 class="wordmark">WHERE AM I?</h1>
-    <p class="standfirst">
-      Guess the city a photograph was taken in. Every photo in the pool is a real
-      place, and the score is the distance between the city you name and the spot
-      the shutter actually fired.
-    </p>
-  </header>
-
-  <dl class="board">
-    <div class="row">
-      <dt>Status</dt>
-      <dd>In development
-        <span class="sub">Playable end to end, in testing on Android</span>
-      </dd>
-    </div>
-    <div class="row">
-      <dt>Platforms</dt>
-      <dd>iOS &middot; Android &middot; Web
-        <span class="sub">Guessing everywhere; photographs are captured on a phone</span>
-      </dd>
-    </div>
-    <div class="row">
-      <dt>The pool</dt>
-      <dd>277 photographs &middot; 187 cities
-        <span class="sub">Growing &mdash; every one reviewed before a player sees it</span>
-      </dd>
-    </div>
-    <div class="row">
-      <dt>A round</dt>
-      <dd>10 photographs &middot; 90 seconds each
-        <span class="sub">Hints cost points. A daily challenge, the same ten for everybody</span>
-      </dd>
-    </div>
-  </dl>
-
-  <div class="band">
-    <p class="label">Coming soon</p>
-    <p class="headline">Store links will appear here.</p>
-  </div>
-
-  <section class="section">
-    <h2>What it is</h2>
-    <p>
-      A photograph, a world of possibilities, and ninety seconds. You name a city;
-      the score is how far off you were. Ten points inside 25&nbsp;km, four for the
-      right country, one for the right continent &mdash; so a wild guess in roughly
-      the right part of the world still counts for something.
-    </p>
-    <p>
-      <strong>The photographs come from players.</strong> Not Street View, not stock
-      imagery &mdash; real pictures taken on real phones, in places people actually
-      were. Uploads are anonymous and reviewed before they enter the pool.
-    </p>
-  </section>
-
-  <section class="section">
-    <h2>Why it&rsquo;s hard</h2>
-    <p>
-      Difficulty isn&rsquo;t about whether you have heard of the city. A beach in
-      Barcelona is a place everyone can name and nobody can place: sand, sea and sky
-      look the same in eighty countries. A back street in a town you have never heard
-      of can be far easier, if the signage, the road markings or the light give it
-      away.
-    </p>
-    <p>
-      So the game sorts photographs by <strong>how much they give away</strong>, not
-      by how famous the answer is &mdash; and the harder buckets pay more.
-    </p>
-  </section>
+    <div class="stripe"></div>
+    <p class="line">A new game for iOS, Android and the web. Coming soon.</p>
+  </main>
 
   <footer>
     <div class="footer-inner">
-      <p class="label">Where Am I? &mdash; an independent game</p>
+      <p class="label">An independent game</p>
       <p class="label">where-am-i-game.com</p>
     </div>
   </footer>
-
-</div>
 
 </body>
 </html>
