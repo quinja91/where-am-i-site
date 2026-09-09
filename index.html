@@ -115,13 +115,18 @@
     color: var(--ink);
   }
 
+  /* Prose is set in the display face, not the mono one. The app divides the
+     two by job -- Spline Sans Mono is every label, coordinate and readout;
+     Space Grotesk is the voice -- and a page with actual sentences on it has
+     to honour that division or it becomes a wall of monospace. */
   .standfirst {
-    font-family: var(--mono);
-    font-size: 15px;
-    line-height: 1.65;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.55;
     color: var(--ink-muted);
     margin: 20px 0 0;
-    max-width: 52ch;
+    max-width: 46ch;
   }
 
   /* ---- the board: hairline-ruled rows of label + readout ---- */
@@ -197,15 +202,16 @@
   }
 
   .section p {
-    font-family: var(--mono);
-    font-size: 15px;
-    line-height: 1.7;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.6;
     color: var(--ink-muted);
     margin: 0 0 14px;
-    max-width: 60ch;
+    max-width: 54ch;
   }
 
-  .section p strong { color: var(--ink); font-weight: 600; }
+  .section p strong { color: var(--ink); font-weight: 700; }
 
   /* ---- colophon ---- */
 
