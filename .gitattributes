@@ -1,0 +1,4 @@
+# Normalise line endings to LF in the repository, and check LF out on every
+# platform, so Windows dev boxes stop triggering "LF will be replaced by CRLF"
+# warnings on every `git add`.
+* text=auto eol=lf
